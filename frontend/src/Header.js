@@ -5,7 +5,9 @@ function Header() {
   return (
     <div className="Header">
       <header className="App-header">
-        <p>Reactへようこそ！</p>
+        <h1>
+          header
+        </h1>
       </header>
     </div>
   );
