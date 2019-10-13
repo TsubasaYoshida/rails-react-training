@@ -8,26 +8,37 @@ const SEARCH_ENGINE_ID = process.env.REACT_APP_SEARCH_ENGINE_ID;
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSearch() {
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
     axios
       .get(CSE_ENDPOINT, {
         params: {
           key: GCP_API_KEY,
           cx: SEARCH_ENGINE_ID,
-          q: '札幌学生野球連盟',
+          q: this.state.value,
         }
       })
       .then((response) => {
+          const item = response.data.items[0]
           this.setState({
-            title: response.data.items[0].title
+            title: item.title,
+            link: item.link,
           });
         },
       )
       .catch(() => {
-        console.log('通信に失敗しました。');
+        console.log('エラーが発生しました。');
       });
   }
 
@@ -35,12 +46,15 @@ export default class App extends Component {
     return (
       <div className="App">
         <h1>検索</h1>
-        <p> {this.state.title} </p>
-        <input
-          type="button"
-          value="検索"
-          onClick={() => this.handleSearch()}
-        />
+
+        <a href={this.state.link}>
+          {this.state.title}
+        </a>
+
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+          <input type="submit" value="検索" />
+        </form>
       </div>
     );
   }
